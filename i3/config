@@ -184,7 +184,7 @@ bindsym $mod+c exec --no-startup-id copyq toggle
 
 bindsym Ctrl+period exec playerctl next
 bindsym Ctrl+comma exec playerctl previous
-bindsym $mod+Shift+z exec "~/.config/i3blocks/scripts/shutdown_menu/shutdown_menu"
+bindsym $mod+Shift+z exec "/home/rundowntrex/Desktop/dotfiles/i3blocks/script/shutdown_menu/shutdown_menu.sh"
 
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
 # && notify-send "Brightness Up" "$(brightnessctl g | awk '{print $1}')"
