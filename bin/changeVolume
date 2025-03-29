@@ -1,0 +1,21 @@
+#!/bin/bash
+# changeVolume (PulseAudio/Pipewire)
+
+msgTag="myvolume"
+
+if [[ "$1" == "toggle" ]]; then
+    pactl set-sink-mute @DEFAULT_SINK@ toggle
+elif [[ "$1" == *"+"* ]]; then
+    pactl set-sink-volume @DEFAULT_SINK@ "$1"
+elif [[ "$1" == *"-"* ]]; then
+    pactl set-sink-volume @DEFAULT_SINK@ "$1"
+fi
+
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | sed 's/%//g')
+mute=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+
+if [[ "$mute" == "yes" ]]; then
+    dunstify -a "changeVolume" -u low -i audio-volume-muted -h string:x-dunst-stack-tag:"$msgTag" "Volume: Muted"
+else
+    dunstify -a "changeVolume" -u low -i audio-volume-high -h string:x-dunst-stack-tag:"$msgTag" -h int:value:"$volume" "Volume: ${volume}%"
+fi
