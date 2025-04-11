@@ -1,121 +1,149 @@
-* {
-  font: "DepartureMono Nerd Font 10";
-
-  bg0    : #1f1f1f80;
-  bg1    : #202020bf;
-  bg2    : #2c2c2c;
-  bg3    : #393939bf;
-  fg0    : #ffffff;
-  fg1    : #cecece;
-  accent : #60cdff;
-  urgent : @accent;
-
-  background-color : transparent;
-  text-color       : @fg0;
-
-  margin  : 0;
-  padding : 0;
-  spacing : 0;
+configuration {
+    show-icons: false;
 }
 
-element-icon, element-text, scrollbar {
-  cursor: pointer;
+* {
+    bg: #1F1F1F;
+    hv: #2A2A2A;
+    primary: rgb(0, 0, 0);
+    ug: #e0744c;
+    font: "Departure Mono Nerd Font 13";
+    border: 0px;
+    kl: #7aa2f7;
+    white: rgb(255, 255, 255);
+    transparent: rgba(46,52,64,0);
+    background-color: @bg;
 }
 
 window {
-  location : south;
-  width    : 600px;
-  height   : 600px;
-  y-offset : -4px;
-
-  background-color : @bg1;
-  border-radius    : 8px;
+    width: 700;
+    location: center;
+    anchor: center;
+    border: 2px solid ;
+    border-radius: 16px;
+    background-color: @transparent;
+    spacing: 0;
+    children: [ mainbox ];
+    border-color: @ug;
+    padding: 0px;
 }
 
 mainbox {
-  padding : 24px;
-  spacing : 24px;
+    spacing: 0;
+    background-color: @bg;
+    border-radius: 16px;
+    children: [ inputbar, message, listview ];
 }
 
 inputbar {
-  padding          : 8px;
-  spacing          : 4px;
-  children         : [ icon-search, entry ];
-  border           : 0 0 2px 0 solid;
-  border-color     : @accent;
-  border-radius    : 2px;
-  background-color : @bg0;
+    padding: 4px;
+    margin: 20px;
+    border: none;
+    border-radius: 16px;
+    background-color: @hv;
+    children: [ prompt, entry ];
 }
 
-icon-search, entry, element-icon, element-text {
-  vertical-align: 0.5;
-}
-
-icon-search {
-  expand   : false;
-  filename : "search-symbolic";
-  size     : 24px;
-}
-
-entry {
-  font              : "DepartureMono Nerd Font 12";
-  placeholder       : "Type here to search";
-  placeholder-color : @fg1;
+message {
+    padding: 0;
+    border: 0px;
+    margin: 0px 20px;
+    background-color: @ug;
+    text-color: @white;
 }
 
 textbox {
-  padding          : 4px 8px;
-  background-color : @bg2;
+    padding: 8px;
+    text-color: @white;
+    background-color: inherit;
+}
+
+error-message {
+    background-color: @ug;
+    text-color: @white;
+}
+
+entry, prompt, case-indicator {
+    text-font: inherit;
+    text-color: @white;
+    background-color: @hv;
+    font-weight: bold;
+}
+
+entry {
+    cursor: pointer;
+    padding-left: 10px;
+    background-color: @hv;
+}
+
+prompt {
+    margin: 0px 5px 0px 20px;
+    background-color: @hv;
 }
 
 listview {
-  columns       : 2;
-  spacing       : 8px;
-  fixed-height  : true;
-  fixed-columns : true;
+    layout: vertical;
+    margin: 0px 20px 20px 20px;
+    border: 0px;
+    border-radius: 16px;
+    dynamic: true;
+    lines: 12;
+    columns: 1;
+    background-color: @bg;
+    fixed-height: false;
 }
 
 element {
-  spacing       : 1em;
-  padding       : 8px;
-  border-radius : 2px;
+    padding: 8px;
+    margin: 2px 0px;
+    vertical-align: 1;
+    font: inherit;
+    border-radius: 16px;
+    background-color: @bg;
 }
 
-element normal urgent {
-  text-color: @urgent;
+element normal.normal {
+    background-color: @bg;
 }
 
-element normal active {
-  text-color: @accent;
+element alternate.normal {
+    background-color: @bg;
 }
 
-element alternate active {
-  text-color: @accent;
-}
-
-element selected active {
-  text-color: @accent;
-}
-
-element selected {
-  background-color: @bg3;
-}
-
-element selected urgent {
-  background-color: @urgent;
-}
-
-element-icon {
-  size: 1.5em;
+element selected.normal {
+    background-color: @hv;
 }
 
 element-text {
-  text-color: inherit;
+    background-color: @bg;
+    text-color: @white;
+    margin: 0px;
+    padding: 0px;
+    highlight: none;
+    expand: true;
 }
-//@theme "/usr/share/rofi/themes/Arc-Dark.rasi"
-@theme "/usr/share/rofi/themes/sidebar.rasi"
 
-configuration {
-  font: "DepartureMono Nerd Font 12";
-  modi: [ window, run, ssh, drun ];
+element-text selected {
+    background-color: @hv;
+    text-color: @white;
+    font-weight: bold;
+}
+
+element-icon {
+    margin-right: 20px;
+    background-color: @bg;
+    size: 24px;
+}
+
+element-icon selected {
+    background-color: @hv;
+}
+
+scrollbar {
+    enabled: true;
+    handle-width: 8px;
+    handle-color: @ug;
+    background-color: @transparent;
+    margin: 5px 0px 5px 4px;
+    border-radius: 16px;
 }
