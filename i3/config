@@ -1,102 +1,167 @@
+#######################
+# BASIC SETTINGS
+#######################
+
+# Define mod key (Mod4 = Super/Windows key)
 set $mod Mod4
 
+# Font settings
 font pango:DepartureMono Nerd Font 8.5
+# font pango:DejaVu Sans Mono 8
 
-#font pango:DejaVu Sans Mono 8
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+tiling_drag modifier titlebar
 
-exec --no-startup-id dex --autostart --environment i3
-
-# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
-# exec --no-startup-id xss-lock -- i3lock-fancy
-exec --no-startup-id xss-lock -- betterlockscreen -l
-
-
-exec --no-startup-id nm-applet
-exec_always --no-startup-id picom  &
-
-exec_always --no-startup-id ~/.config/polybar/launch.sh
-
-#exec --no-startup-id xinput disable 14
-exec --no-startup-id copyq
-#exec --no-startup-id feh --bg-fill Downloads/God_Lain.jpg
-exec --no-startup-id feh --bg-fill Desktop/Wall/HuTao.jpeg
-#exec --no-startup-id feh --randomize --bg-max Desktop/Wall/*
-
-exec --no-startup-id xset s off          # Disable screensaver
-exec --no-startup-id xset s noblank       # Disable screen blanking
-exec --no-startup-id xset s noexpose      # Prevent screen from fading
-exec --no-startup-id xset -dpms           # Disable power management
-
-
+# i3status refresh
 set $refresh_i3status killall -SIGUSR1 i3status
 
-#bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-sink-volume @DEFAULT_SINK@ +5% && notify-send -i audio-volume-high "Volume Up" "$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')"
-#bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-sink-volume @DEFAULT_SINK@ -5% && notify-send -i audio-volume-low "Volume Down" "$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')"
-#bindsym XF86AudioMute exec --no-startup-id wpctl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -i audio-volume-muted "Audio" "Mute Toggled"bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
+#######################
+# APPEARANCE
+#######################
+
+# Border settings
+for_window [class=".*"] border pixel 0
+
+# Gaps settings
+gaps inner 5
+
+#######################
+# AUTOSTART APPLICATIONS
+#######################
+
+# System utilities
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id nm-applet
+exec --no-startup-id copyq
+exec_always --no-startup-id picom &
+
+# Screen locking
+exec --no-startup-id xss-lock -- betterlockscreen -l
+# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+# exec --no-startup-id xss-lock -- i3lock-fancy
+
+# Power management
+exec --no-startup-id xset s off          # Disable screensaver
+exec --no-startup-id xset s noblank      # Disable screen blanking
+exec --no-startup-id xset s noexpose     # Prevent screen from fading
+exec --no-startup-id xset -dpms          # Disable power management
+
+# Background/Wallpaper
+exec --no-startup-id feh --bg-fill Desktop/Wall/HuTao.jpeg
+# exec --no-startup-id feh --bg-fill Downloads/God_Lain.jpg
+# exec --no-startup-id feh --randomize --bg-max Desktop/Wall/*
+
+# Status bar
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+# Other autostart applications
+# exec --no-startup-id xinput disable 14
+# exec_always --no-startup-id /usr/local/bin/autotiling &
+
+
+#######################
+# KEYBINDINGS
+#######################
+
+## System Controls
+
+# Volume Controls
 bindsym XF86AudioRaiseVolume exec ~/.local/bin/changeVolume +5%
 bindsym XF86AudioLowerVolume exec ~/.local/bin/changeVolume -5%
 bindsym XF86AudioMute exec ~/.local/bin/changeVolume toggle
 
+# Media keys
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 
-# exec_always --no-startup-id /usr/local/bin/autotiling &
+# bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-sink-volume @DEFAULT_SINK@ +5% && notify-send -i audio-volume-high "Volume Up" "$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')"
+# bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-sink-volume @DEFAULT_SINK@ -5% && notify-send -i audio-volume-low "Volume Down" "$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')"
+# bindsym XF86AudioMute exec --no-startup-id wpctl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -i audio-volume-muted "Audio" "Mute Toggled"
 
+# Brightness Controls
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 
-floating_modifier $mod
+# Media Player Controls
+bindsym Ctrl+period exec playerctl next
+bindsym Ctrl+comma exec playerctl previous
 
-tiling_drag modifier titlebar
-
+## Application Launchers
 bindsym $mod+Return exec gnome-terminal -- fish
 bindsym $mod+Shift+Return exec --no-startup-id kitty -e fish
-
-bindsym $mod+Shift+q kill
-#bindsym $mod+Shift+x exec i3lock-fancy
-bindsym $mod+Shift+x exec betterlockscreen -l dim
-#bindsym $mod+period exec /home/rundowntrex/.local/bin/rofimoji
+bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+c exec --no-startup-id copyq toggle
 bindsym $mod+period exec /usr/bin/rofimoji
 bindsym $mod+Shift+a exec ani-cli --rofi
-
 bindsym $mod+Shift+n exec ~/.local/bin/dunst
-bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+Shift+t exec curd -rofi
+bindsym $mod+Shift+f exec nemo
+bindsym XF86Tools exec --no-startup-id spotify
+bindsym XF86Mail exec --no-startup-id discord
+bindsym XF86Calculator exec --no-startup-id rofi -show calc -modi calc -no-show-match -no-sort
 
+## Window Management
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+x exec betterlockscreen -l dim
+# bindsym $mod+Shift+x exec i3lock-fancy
+
+# Focus control
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
-
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
+bindsym $mod+a focus parent
+# bindsym $mod+d focus child
 
+# Move focused window
 bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
-
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+# Layout controls
 bindsym $mod+b split h
-
 bindsym $mod+v split v
-
 bindsym $mod+f fullscreen toggle
-
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
-
 bindsym $mod+Shift+space floating toggle
-
 bindsym $mod+space focus mode_toggle
 
-bindsym $mod+a focus parent
+# Gaps controls
+bindsym $mod+Shift+plus gaps outer all plus 5
+bindsym $mod+Shift+minus gaps outer all minus 5
+bindsym $mod+Shift+w gaps outer all set 0
+bindsym $mod+Shift+KP_Add gaps inner all plus 5
+bindsym $mod+Shift+KP_Subtract gaps inner all minus 5
 
-#bindsym $mod+d focus child
+## System Commands
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+z exec "/home/rundowntrex/Desktop/dotfiles/i3blocks/script/shutdown_menu/shutdown_menu.sh"
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui && sleep 5 && killall flameshot
+#bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/rofi-bluetooth.sh
+bindsym $mod+Shift+b exec --no-startup-id blueman-manager
+bindsym $mod+Shift+e exec --no-startup-id microsoft-edge-stable
 
+#######################
+# WORKSPACES
+#######################
+
+# Define workspace names
 set $ws1 "1"
 set $ws2 "2"
 set $ws3 "3"
@@ -108,6 +173,7 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+# Switch to workspace (number row)
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
 bindsym $mod+3 workspace number $ws3
@@ -119,6 +185,7 @@ bindsym $mod+8 workspace number $ws8
 bindsym $mod+9 workspace number $ws9
 bindsym $mod+0 workspace number $ws10
 
+# Switch to workspace (keypad)
 bindsym $mod+mod2+KP_1 workspace $ws1
 bindsym $mod+mod2+KP_2 workspace $ws2
 bindsym $mod+mod2+KP_3 workspace $ws3
@@ -130,7 +197,7 @@ bindsym $mod+mod2+KP_8 workspace $ws8
 bindsym $mod+mod2+KP_9 workspace $ws9
 bindsym $mod+mod2+KP_0 workspace $ws10
 
-
+# Move focused container to workspace (number row)
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
 bindsym $mod+Shift+3 move container to workspace number $ws3
@@ -142,6 +209,7 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+# Move focused container to workspace (keypad)
 bindsym $mod+Shift+Mod2+KP_End move container to workspace 1
 bindsym $mod+Shift+Mod2+KP_Down move container to workspace 2
 bindsym $mod+Shift+Mod2+KP_Next move container to workspace 3
@@ -153,21 +221,40 @@ bindsym $mod+Shift+Mod2+KP_Up move container to workspace 8
 bindsym $mod+Shift+Mod2+KP_Prior move container to workspace 9
 bindsym $mod+Shift+Mod2+KP_Insert move container to workspace 10
 
-bindsym $mod+Shift+c reload
-bindsym $mod+Shift+r restart
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
+#######################
+# WINDOW RULES
+#######################
+
+# Application workspace assignments
+assign [class="firefox"] 1
+assign [class="Microsoft-edge"] 1
+assign [class="Code"] 2
+assign [class="discord"] 4
+assign [class="Spotify"] 5
+assign [class="mpv"] 9
+assign [class="Postman"] 8
+assign [class="MongoDB Compass"] 7
+
+#######################
+# MODES
+#######################
+
+# Resize mode
 mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
         bindsym j resize shrink width 10 px or 10 ppt
         bindsym k resize grow height 10 px or 10 ppt
         bindsym l resize shrink height 10 px or 10 ppt
         bindsym semicolon resize grow width 10 px or 10 ppt
 
+        # Same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
         bindsym Down resize grow height 10 px or 10 ppt
         bindsym Up resize shrink height 10 px or 10 ppt
         bindsym Right resize grow width 10 px or 10 ppt
 
+        # Back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
@@ -175,38 +262,12 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-#bar {
+
+#######################
+# STATUS BAR 
+#######################
+
+# bar {
 #        position top
 #        status_command SCRIPT_DIR=~/.config/i3blocks/scripts i3blocks
-#}
-
-bindsym $mod+Shift+s exec --no-startup-id flameshot gui && sleep 3 && killall flameshot
-bindsym $mod+c exec --no-startup-id copyq toggle
-
-bindsym Ctrl+period exec playerctl next
-bindsym Ctrl+comma exec playerctl previous
-bindsym $mod+Shift+z exec "/home/rundowntrex/Desktop/dotfiles/i3blocks/script/shutdown_menu/shutdown_menu.sh"
-
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
-# && notify-send "Brightness Up" "$(brightnessctl g | awk '{print $1}')"
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
-# && notify-send "Brightness Down" "$(brightnessctl g | awk '{print $1}')"
-
-
-assign [class="firefox"] 1
-assign [class="Microsoft-edge"] 1
-assign [class="Code"] 2
-assign [class="discord"] 4
-assign [class="Spotify"] 5
-assign [class="mpv"] 9
-
-
-for_window [class=".*"] border pixel 0
-gaps inner 5
-
-bindsym $mod+Shift+plus gaps outer all plus 5
-bindsym $mod+Shift+minus gaps outer all minus 5
-bindsym $mod+Shift+w gaps outer all set 0
-
-bindsym $mod+Shift+KP_Add gaps inner all plus 5
-bindsym $mod+Shift+KP_Subtract gaps inner all minus 5
+# }

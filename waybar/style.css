@@ -71,7 +71,7 @@
   border-left: none;
 }
 
-#mode, #battery, #cpu, #memory, #network, #pulseaudio, #idle_inhibitor, #backlight, #custom-storage, #custom-updates, #custom-weather, #custom-mail, #clock, #temperature, #language, #bluetooth, #custom-dunst_dnd{
+#mode, #battery, #cpu, #memory, #network, #pulseaudio, #idle_inhibitor, #backlight, #custom-storage, #custom-updates, #custom-weather, #custom-mail, #clock, #temperature, #language, #bluetooth, #custom-dunst_dnd, #custom-spotify{
   margin: 4px 2px;
   padding: 0 11px 0px 5px;
   background-color: @base01;
