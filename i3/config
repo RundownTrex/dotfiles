@@ -36,9 +36,11 @@ exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id nm-applet
 exec --no-startup-id copyq
 exec_always --no-startup-id picom &
+exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg
+
 
 # Screen locking
-exec --no-startup-id xss-lock -- betterlockscreen -l
+exec --no-startup-id xss-lock -- betterlockscreen -l dim
 # exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # exec --no-startup-id xss-lock -- i3lock-fancy
 
@@ -67,6 +69,13 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 ## System Controls
 
+bindsym $mod+Tab \
+        fullscreen disable, focus right, fullscreen enable
+
+bindsym $mod+Shift+Tab \
+        workspace next
+
+
 # Volume Controls
 bindsym XF86AudioRaiseVolume exec ~/.local/bin/changeVolume +5%
 bindsym XF86AudioLowerVolume exec ~/.local/bin/changeVolume -5%
@@ -84,6 +93,9 @@ bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 # Brightness Controls
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym $mod+plus exec --no-startup-id brightnessctl set +5%
+bindsym $mod+minus exec --no-startup-id brightnessctl set 5%-
+
 
 # Media Player Controls
 bindsym Ctrl+period exec playerctl next
@@ -121,10 +133,10 @@ bindsym $mod+a focus parent
 # bindsym $mod+d focus child
 
 # Move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
@@ -141,21 +153,25 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # Gaps controls
-bindsym $mod+Shift+plus gaps outer all plus 5
-bindsym $mod+Shift+minus gaps outer all minus 5
+#bindsym $mod+Shift+plus gaps outer all plus 5
+#bindsym $mod+Shift+minus gaps outer all minus 5
 bindsym $mod+Shift+w gaps outer all set 0
 bindsym $mod+Shift+KP_Add gaps inner all plus 5
 bindsym $mod+Shift+KP_Subtract gaps inner all minus 5
 
 ## System Commands
-bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+z exec "/home/rundowntrex/Desktop/dotfiles/i3blocks/script/shutdown_menu/shutdown_menu.sh"
-bindsym $mod+Shift+s exec --no-startup-id flameshot gui && sleep 5 && killall flameshot
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 #bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/rofi-bluetooth.sh
 bindsym $mod+Shift+b exec --no-startup-id blueman-manager
 bindsym $mod+Shift+e exec --no-startup-id microsoft-edge-stable
+
+## Misc
+
+bindsym $mod+Shift+c exec --no-startup-id ~/.local/bin/jokes.sh
+bindsym $mod+Shift+colon exec --no-startup-id ~/.local/bin/qr.sh
 
 #######################
 # WORKSPACES
@@ -172,6 +188,8 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
+
+
 
 # Switch to workspace (number row)
 bindsym $mod+1 workspace number $ws1
@@ -235,6 +253,8 @@ assign [class="Spotify"] 5
 assign [class="mpv"] 9
 assign [class="Postman"] 8
 assign [class="MongoDB Compass"] 7
+assign [class="jetbrains-idea-ce"] 2
+
 
 #######################
 # MODES
@@ -243,10 +263,10 @@ assign [class="MongoDB Compass"] 7
 # Resize mode
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
         # Same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt

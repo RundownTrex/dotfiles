@@ -101,7 +101,7 @@
             "enabled": false
         },
         "CallTimer": {
-            "enabled": false
+            "enabled": true
         },
         "ClearURLs": {
             "enabled": false
@@ -219,8 +219,7 @@
             "enabled": false
         },
         "GreetStickerPicker": {
-            "enabled": true,
-            "greetMode": "Greet"
+            "enabled": false
         },
         "iLoveSpam": {
             "enabled": false
@@ -301,7 +300,7 @@
             "enabled": false
         },
         "MoreCommands": {
-            "enabled": true
+            "enabled": false
         },
         "MoreKaomoji": {
             "enabled": false
@@ -631,7 +630,7 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1748692352801
+        "settingsSyncVersion": 1749378840317
     },
     "eagerPatches": false
 }

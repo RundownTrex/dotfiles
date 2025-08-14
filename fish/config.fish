@@ -20,5 +20,7 @@ function disable-touchpad
     xinput disable (xinput list | grep -i 'touchpad' | grep -o 'id=[0-9]*' | cut -d= -f2)
 end
 
+set -gx ADW_DISABLE_PORTAL 1
 set -gx PATH /opt/android-sdk/platform-tools $PATH
 set -gx PATH $PATH $HOME/.maestro/bin
+set -gx PATH $HOME/.nvm/versions/node/v22.16.0/bin $PATH

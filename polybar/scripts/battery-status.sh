@@ -1,7 +1,7 @@
 #!/bin/bash
 
-battery_status=$(cat /sys/class/power_supply/BAT1/status)
-battery_level=$(cat /sys/class/power_supply/BAT1/capacity)
+battery_status=$(cat /sys/class/power_supply/BAT0/status)
+battery_level=$(cat /sys/class/power_supply/BAT0/capacity)
 
 case "$battery_status" in
     "Charging") icon="󰂄" ;;  # Charging icon
