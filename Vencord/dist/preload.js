@@ -1,4 +1,4 @@
-// Vencord f356f64
+// Vencord fbc2dbe
 // Standalone: true
 // Platform: Universal
 // Updater Disabled: false

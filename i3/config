@@ -91,10 +91,16 @@ bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 # bindsym XF86AudioMute exec --no-startup-id wpctl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -i audio-volume-muted "Audio" "Mute Toggled"
 
 # Brightness Controls
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
-bindsym $mod+plus exec --no-startup-id brightnessctl set +5%
-bindsym $mod+minus exec --no-startup-id brightnessctl set 5%-
+#bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5% && polybar-msg hook nightlight 1
+#bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%- && polybar-msg hook nightlight 1
+#bindsym $mod+plus exec --no-startup-id brightnessctl set +5% && polybar-msg hook nightlight 1
+#bindsym $mod+minus exec --no-startup-id brightnessctl set 5%- && polybar-msg hook nightlight 1
+
+bindsym XF86MonBrightnessUp exec --no-startup-id ~/.local/bin/changeBrightness.sh +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/changeBrightness.sh 5%-
+bindsym $mod+plus exec --no-startup-id ~/.local/bin/changeBrightness.sh +5%
+bindsym $mod+minus exec --no-startup-id ~/.local/bin/changeBrightness.sh 5%-
+
 
 
 # Media Player Controls
@@ -102,13 +108,13 @@ bindsym Ctrl+period exec playerctl next
 bindsym Ctrl+comma exec playerctl previous
 
 ## Application Launchers
-bindsym $mod+Return exec gnome-terminal -- fish
-bindsym $mod+Shift+Return exec --no-startup-id kitty -e fish
+bindsym $mod+Shift+Return exec gnome-terminal -- fish
+bindsym $mod+Return exec --no-startup-id kitty -e fish
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+c exec --no-startup-id copyq toggle
 bindsym $mod+period exec /usr/bin/rofimoji
 bindsym $mod+Shift+a exec ani-cli --rofi
-bindsym $mod+Shift+n exec ~/.local/bin/dunst
+bindsym $mod+Shift+n exec ~/.local/bin/dunst && polybar-msg hook dnd 1
 bindsym $mod+Shift+t exec curd -rofi
 bindsym $mod+Shift+f exec nemo
 bindsym XF86Tools exec --no-startup-id spotify

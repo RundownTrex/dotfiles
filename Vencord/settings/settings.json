@@ -47,7 +47,8 @@
             "enabled": true
         },
         "AccountPanelServerProfile": {
-            "enabled": false
+            "enabled": true,
+            "prioritizeServerProfile": true
         },
         "AlwaysAnimate": {
             "enabled": false
@@ -113,7 +114,18 @@
             "enabled": false
         },
         "ConsoleJanitor": {
-            "enabled": false
+            "enabled": true,
+            "disableLoggers": false,
+            "disableSpotifyLogger": true,
+            "whitelistedLoggers": "GatewaySocket; Routing/Utils",
+            "allowLevel": {
+                "error": true,
+                "warn": false,
+                "trace": false,
+                "log": false,
+                "info": false,
+                "debug": false
+            }
         },
         "ConsoleShortcuts": {
             "enabled": false
@@ -136,7 +148,7 @@
         "CustomRPC": {
             "enabled": false,
             "type": 0,
-            "timestampMode": 0
+            "timestampMode": 1
         },
         "CustomIdle": {
             "enabled": false,
@@ -269,7 +281,10 @@
             "enabled": false
         },
         "MemberCount": {
-            "enabled": false
+            "enabled": false,
+            "toolTip": true,
+            "memberList": true,
+            "voiceActivity": true
         },
         "MentionAvatars": {
             "enabled": false
@@ -492,7 +507,9 @@
             "enabled": false
         },
         "SilentMessageToggle": {
-            "enabled": false
+            "enabled": false,
+            "persistState": false,
+            "autoDisable": true
         },
         "SilentTyping": {
             "enabled": true,
@@ -510,7 +527,7 @@
             "enabled": false
         },
         "SpotifyShareCommands": {
-            "enabled": false
+            "enabled": true
         },
         "StartupTimings": {
             "enabled": false
@@ -555,7 +572,9 @@
             "enabled": false
         },
         "USRBG": {
-            "enabled": false
+            "enabled": false,
+            "nitroFirst": true,
+            "voiceBackground": true
         },
         "ValidReply": {
             "enabled": false
@@ -618,6 +637,13 @@
         },
         "ExpressionCloner": {
             "enabled": true
+        },
+        "CopyStickerLinks": {
+            "enabled": false
+        },
+        "ImageFilename": {
+            "enabled": true,
+            "showFullUrl": true
         }
     },
     "notifications": {
@@ -630,7 +656,7 @@
         "authenticated": false,
         "url": "https://api.vencord.dev/",
         "settingsSync": false,
-        "settingsSyncVersion": 1749378840317
+        "settingsSyncVersion": 1758131317453
     },
     "eagerPatches": false
 }
