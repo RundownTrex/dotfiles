@@ -21,11 +21,22 @@ connect_adb_wifi() {
 }
 
 
+
+#sshhome() {
+#  ssh -i ~/.ssh/id_ed25519_personal "$1@$2"
+#}
+
 sshhome() {
-  ssh -i ~/.ssh/id_ed25519_personal "$1@$2"
+	env TERM=xterm-256color ssh -i ~/.ssh/id_ed25519_personal "$argv[1]@$argv[2]"
 }
 
+
+export ANDROID_HOME=/home/rundowntrex/Android/Sdk/
 export ADW_DISABLE_PORTAL=1
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "$HOME/.cargo/env"
+export PATH="/home/rundowntrex/.local/bin:$PATH"
+
+export PATH=$PATH:/home/rundowntrex/.spicetify

@@ -24,3 +24,5 @@ set -gx ADW_DISABLE_PORTAL 1
 set -gx PATH /opt/android-sdk/platform-tools $PATH
 set -gx PATH $PATH $HOME/.maestro/bin
 set -gx PATH $HOME/.nvm/versions/node/v22.16.0/bin $PATH
+
+set -Ux PATH /home/rundowntrex/.local/bin $PATH

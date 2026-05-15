@@ -22,7 +22,10 @@ set $refresh_i3status killall -SIGUSR1 i3status
 #######################
 
 # Border settings
-for_window [class=".*"] border pixel 0
+for_window [class=".*"] border pixel 3
+for_window [class="Yad" title="Calendar"] floating enable, border none
+
+client.focused #BF5A45 #BF5A45 #ffffff #BF5A45 #BF5A45
 
 # Gaps settings
 gaps inner 5
@@ -36,7 +39,13 @@ exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id nm-applet
 exec --no-startup-id copyq
 exec_always --no-startup-id picom &
-exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg
+#exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg
+#exec --no-startup-id eval $(gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+#exec --no-startup-id dbus-update-activation-environment --all
+
+#exec --no-startup-id bash ~/.config/i3/start-keyring.sh
+
+exec_always --no-startup-id xplugd -c ~/.config/xplugd/xplugd.sh
 
 
 # Screen locking
@@ -51,7 +60,8 @@ exec --no-startup-id xset s noexpose     # Prevent screen from fading
 exec --no-startup-id xset -dpms          # Disable power management
 
 # Background/Wallpaper
-exec --no-startup-id feh --bg-fill Desktop/Wall/HuTao.jpeg
+# exec --no-startup-id feh --bg-fill Desktop/Wall/HuTao.jpeg
+exec --no-startup-id feh --bg-fill Pictures/Dragonspine.jpg
 # exec --no-startup-id feh --bg-fill Downloads/God_Lain.jpg
 # exec --no-startup-id feh --randomize --bg-max Desktop/Wall/*
 
@@ -101,6 +111,9 @@ bindsym XF86MonBrightnessDown exec --no-startup-id ~/.local/bin/changeBrightness
 bindsym $mod+plus exec --no-startup-id ~/.local/bin/changeBrightness.sh +5%
 bindsym $mod+minus exec --no-startup-id ~/.local/bin/changeBrightness.sh 5%-
 
+bindsym $mod+KP_Subtract exec --no-startup-id redshift -O 4500 -b 0.85 -g 0.9:0.9:0.9
+bindsym $mod+KP_Multiply exec --no-startup-id redshift -x
+
 
 
 # Media Player Controls
@@ -108,15 +121,19 @@ bindsym Ctrl+period exec playerctl next
 bindsym Ctrl+comma exec playerctl previous
 
 ## Application Launchers
-bindsym $mod+Shift+Return exec gnome-terminal -- fish
+#bindsym $mod+Shift+Return exec gnome-terminal -- fish
+bindsym $mod+Shift+Return exec kitty -e ranger
 bindsym $mod+Return exec --no-startup-id kitty -e fish
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+c exec --no-startup-id copyq toggle
 bindsym $mod+period exec /usr/bin/rofimoji
 bindsym $mod+Shift+a exec ani-cli --rofi
+bindsym $mod+n exec ronema
 bindsym $mod+Shift+n exec ~/.local/bin/dunst && polybar-msg hook dnd 1
 bindsym $mod+Shift+t exec curd -rofi
-bindsym $mod+Shift+f exec nemo
+#bindsym $mod+Shift+f exec nemo
+bindsym $mod+Shift+f exec rofi -show filebrowser
+
 bindsym XF86Tools exec --no-startup-id spotify
 bindsym XF86Mail exec --no-startup-id discord
 bindsym XF86Calculator exec --no-startup-id rofi -show calc -modi calc -no-show-match -no-sort
@@ -149,7 +166,7 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # Layout controls
-bindsym $mod+b split h
+bindsym $mod+g split h
 bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
@@ -168,11 +185,14 @@ bindsym $mod+Shift+KP_Subtract gaps inner all minus 5
 ## System Commands
 bindsym $mod+Shift+r restart
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+z exec "/home/rundowntrex/Desktop/dotfiles/i3blocks/script/shutdown_menu/shutdown_menu.sh"
+bindsym $mod+Shift+z exec "~/.local/bin/shutdown_menu.sh"
 bindsym $mod+Shift+s exec --no-startup-id flameshot gui
+bindsym $mod+b exec --no-startup-id ~/.local/bin/rofi-bluetooth.sh
 #bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/rofi-bluetooth.sh
-bindsym $mod+Shift+b exec --no-startup-id blueman-manager
-bindsym $mod+Shift+e exec --no-startup-id microsoft-edge-stable
+#bindsym $mod+Shift+b exec --no-startup-id blueman-manager
+bindsym $mod+Shift+b exec --no-startup-id ~/.local/bin/changeStuff.sh
+
+bindsym $mod+Shift+e exec --no-startup-id microsoft-edge-beta
 
 ## Misc
 
@@ -260,8 +280,16 @@ assign [class="mpv"] 9
 assign [class="Postman"] 8
 assign [class="MongoDB Compass"] 7
 assign [class="jetbrains-idea-ce"] 2
-
-
+assign [class="Antigravity"] 2
+assign [class="jellyfin-desktop"] 9
+assign [class="scrcpy"] 3
+assign [class="Google-chrome"] 1
+assign [class="midori"] 1
+assign [class="steam"] 7
+assign [class="steam_app_3224770"] 8
+assign [class="heroic"] 7
+assign [class="com.github.th_ch.youtube_music"] 7
+ 
 #######################
 # MODES
 #######################

@@ -6,46 +6,152 @@
 # |_|  \___/|_| |_|     |_.__/|_|\__,_|\___|\__\___/ \___/ \__|_| |_|
 #
 # Author: Nick Clyde (clydedroid)
+# Modified: Uses D-Bus for queries (bluetoothctl v5.86+ non-interactive mode is broken)
 #
 # A script that generates a rofi menu that uses bluetoothctl to
 # connect to bluetooth devices and display status info.
 #
-# Inspired by networkmanager-dmenu (https://github.com/firecat53/networkmanager-dmenu)
-# Thanks to x70b1 (https://github.com/polybar/polybar-scripts/tree/master/polybar-scripts/system-bluetooth-bluetoothctl)
-#
 # Depends on:
-#   Arch repositories: rofi, bluez-utils (contains bluetoothctl), bc
+#   Arch repositories: rofi, bluez-utils (contains bluetoothctl)
 
 # Constants
 divider="---------"
 goback="Back"
 
+# ──────────────────────────────────────────────
+# D-Bus helpers (work without a TTY, unlike bluetoothctl v5.86+)
+# ──────────────────────────────────────────────
+
+# Get a property from the adapter via D-Bus
+_adapter_prop() {
+    dbus-send --system --print-reply --dest=org.bluez \
+        /org/bluez/hci0 \
+        org.freedesktop.DBus.Properties.Get \
+        string:"org.bluez.Adapter1" string:"$1" 2>/dev/null | \
+        grep -oP '(boolean|string) \K.*' | tr -d '"'
+}
+
+# Get a property from a device via D-Bus
+_device_prop() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.freedesktop.DBus.Properties.Get \
+        string:"org.bluez.Device1" string:"$2" 2>/dev/null | \
+        grep -oP '(boolean|string|byte) \K.*' | tr -d '"'
+}
+
+# Set a property on the adapter via D-Bus
+_adapter_set() {
+    dbus-send --system --print-reply --dest=org.bluez \
+        /org/bluez/hci0 \
+        org.freedesktop.DBus.Properties.Set \
+        string:"org.bluez.Adapter1" string:"$1" \
+        "variant:boolean:$2" 2>/dev/null > /dev/null
+}
+
+# List all device MAC addresses (only top-level devices, not sub-objects)
+_list_device_macs() {
+    dbus-send --system --print-reply --dest=org.bluez / \
+        org.freedesktop.DBus.ObjectManager.GetManagedObjects 2>/dev/null | \
+        grep -oP 'object path "/org/bluez/hci0/dev_\K[A-F0-9_]+(?=")' | \
+        sort -u | tr '_' ':'
+}
+
+# Connect/disconnect a device via D-Bus
+_device_connect() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.bluez.Device1.Connect 2>/dev/null > /dev/null
+}
+
+_device_disconnect() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.bluez.Device1.Disconnect 2>/dev/null > /dev/null
+}
+
+_device_pair() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.bluez.Device1.Pair 2>/dev/null > /dev/null
+}
+
+_device_remove() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        /org/bluez/hci0 \
+        org.bluez.Adapter1.RemoveDevice \
+        "objpath:/org/bluez/hci0/dev_${mac_path}" 2>/dev/null > /dev/null
+}
+
+_device_trust() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.freedesktop.DBus.Properties.Set \
+        string:"org.bluez.Device1" string:"Trusted" \
+        "variant:boolean:$1" 2>/dev/null > /dev/null
+}
+
+_device_set_trusted() {
+    local mac_path
+    mac_path=$(echo "$1" | tr ':' '_')
+    dbus-send --system --print-reply --dest=org.bluez \
+        "/org/bluez/hci0/dev_${mac_path}" \
+        org.freedesktop.DBus.Properties.Set \
+        string:"org.bluez.Device1" string:"Trusted" \
+        "variant:boolean:$2" 2>/dev/null > /dev/null
+}
+
+# Start/stop scanning via D-Bus
+_adapter_start_discovery() {
+    dbus-send --system --print-reply --dest=org.bluez \
+        /org/bluez/hci0 \
+        org.bluez.Adapter1.StartDiscovery 2>/dev/null > /dev/null
+}
+
+_adapter_stop_discovery() {
+    dbus-send --system --print-reply --dest=org.bluez \
+        /org/bluez/hci0 \
+        org.bluez.Adapter1.StopDiscovery 2>/dev/null > /dev/null
+}
+
+# ──────────────────────────────────────────────
+# High-level functions
+# ──────────────────────────────────────────────
+
 # Checks if bluetooth controller is powered on
 power_on() {
-    if bluetoothctl show | grep -q "Powered: yes"; then
-        return 0
-    else
-        return 1
-    fi
+    [[ "$(_adapter_prop Powered)" == "true" ]]
 }
 
 # Toggles power state
 toggle_power() {
     if power_on; then
-        bluetoothctl power off
+        _adapter_set Powered false
         show_menu
     else
         if rfkill list bluetooth | grep -q 'blocked: yes'; then
             rfkill unblock bluetooth && sleep 3
         fi
-        bluetoothctl power on
+        _adapter_set Powered true
         show_menu
     fi
 }
 
 # Checks if controller is scanning for new devices
 scan_on() {
-    if bluetoothctl show | grep -q "Discovering: yes"; then
+    if [[ "$(_adapter_prop Discovering)" == "true" ]]; then
         echo "Scan: on"
         return 0
     else
@@ -57,19 +163,19 @@ scan_on() {
 # Toggles scanning state
 toggle_scan() {
     if scan_on; then
-        kill $(pgrep -f "bluetoothctl --timeout 5 scan on")
-        bluetoothctl scan off
+        _adapter_stop_discovery
         show_menu
     else
-        bluetoothctl --timeout 5 scan on
+        _adapter_start_discovery &
         echo "Scanning..."
+        sleep 5
         show_menu
     fi
 }
 
 # Checks if controller is able to pair to devices
 pairable_on() {
-    if bluetoothctl show | grep -q "Pairable: yes"; then
+    if [[ "$(_adapter_prop Pairable)" == "true" ]]; then
         echo "Pairable: on"
         return 0
     else
@@ -81,17 +187,17 @@ pairable_on() {
 # Toggles pairable state
 toggle_pairable() {
     if pairable_on; then
-        bluetoothctl pairable off
+        _adapter_set Pairable false
         show_menu
     else
-        bluetoothctl pairable on
+        _adapter_set Pairable true
         show_menu
     fi
 }
 
 # Checks if controller is discoverable by other devices
 discoverable_on() {
-    if bluetoothctl show | grep -q "Discoverable: yes"; then
+    if [[ "$(_adapter_prop Discoverable)" == "true" ]]; then
         echo "Discoverable: on"
         return 0
     else
@@ -103,39 +209,35 @@ discoverable_on() {
 # Toggles discoverable state
 toggle_discoverable() {
     if discoverable_on; then
-        bluetoothctl discoverable off
+        _adapter_set Discoverable false
         show_menu
     else
-        bluetoothctl discoverable on
+        _adapter_set Discoverable true
         show_menu
     fi
 }
 
 # Checks if a device is connected
 device_connected() {
-    device_info=$(bluetoothctl info "$1")
-    if echo "$device_info" | grep -q "Connected: yes"; then
-        return 0
-    else
-        return 1
-    fi
+    [[ "$(_device_prop "$1" Connected)" == "true" ]]
 }
 
 # Toggles device connection
 toggle_connection() {
     if device_connected "$1"; then
-        bluetoothctl disconnect "$1"
+        _device_disconnect "$1"
+        sleep 1
         device_menu "$device"
     else
-        bluetoothctl connect "$1"
+        _device_connect "$1"
+        sleep 2
         device_menu "$device"
     fi
 }
 
 # Checks if a device is paired
 device_paired() {
-    device_info=$(bluetoothctl info "$1")
-    if echo "$device_info" | grep -q "Paired: yes"; then
+    if [[ "$(_device_prop "$1" Paired)" == "true" ]]; then
         echo "Paired: yes"
         return 0
     else
@@ -147,18 +249,19 @@ device_paired() {
 # Toggles device paired state
 toggle_paired() {
     if device_paired "$1"; then
-        bluetoothctl remove "$1"
+        _device_remove "$1"
+        sleep 1
         device_menu "$device"
     else
-        bluetoothctl pair "$1"
+        _device_pair "$1"
+        sleep 2
         device_menu "$device"
     fi
 }
 
 # Checks if a device is trusted
 device_trusted() {
-    device_info=$(bluetoothctl info "$1")
-    if echo "$device_info" | grep -q "Trusted: yes"; then
+    if [[ "$(_device_prop "$1" Trusted)" == "true" ]]; then
         echo "Trusted: yes"
         return 0
     else
@@ -167,13 +270,13 @@ device_trusted() {
     fi
 }
 
-# Toggles device connection
+# Toggles device trust
 toggle_trust() {
     if device_trusted "$1"; then
-        bluetoothctl untrust "$1"
+        _device_set_trusted "$1" false
         device_menu "$device"
     else
-        bluetoothctl trust "$1"
+        _device_set_trusted "$1" true
         device_menu "$device"
     fi
 }
@@ -182,33 +285,24 @@ toggle_trust() {
 # Useful for status bars like polybar, etc.
 print_status() {
     if power_on; then
-        printf ''
+        printf ''
 
-        paired_devices_cmd="devices Paired"
-        # Check if an outdated version of bluetoothctl is used to preserve backwards compatibility
-        if (( $(echo "$(bluetoothctl version | cut -d ' ' -f 2) < 5.65" | bc -l) )); then
-            paired_devices_cmd="paired-devices"
-        fi
-
-        mapfile -t paired_devices < <(bluetoothctl $paired_devices_cmd | grep Device | cut -d ' ' -f 2)
-        counter=0
-
-        for device in "${paired_devices[@]}"; do
-            if device_connected "$device"; then
-                device_alias=$(bluetoothctl info "$device" | grep "Alias" | cut -d ' ' -f 2-)
-
+        local counter=0
+        for mac in $(_list_device_macs); do
+            if device_connected "$mac"; then
+                local device_alias
+                device_alias=$(_device_prop "$mac" Alias)
                 if [ $counter -gt 0 ]; then
                     printf ", %s" "$device_alias"
                 else
                     printf " %s" "$device_alias"
                 fi
-
                 ((counter++))
             fi
         done
         printf "\n"
     else
-        echo ""
+        echo ""
     fi
 }
 
@@ -260,8 +354,18 @@ show_menu() {
         power="Power: on"
 
         # Human-readable names of devices, one per line
-        # If scan is off, will only list paired devices
-        devices=$(bluetoothctl devices | grep Device | cut -d ' ' -f 3-)
+        local devices=""
+        for mac in $(_list_device_macs); do
+            local name
+            name=$(_device_prop "$mac" Alias)
+            if [ -n "$name" ]; then
+                if [ -n "$devices" ]; then
+                    devices="$devices\n$name"
+                else
+                    devices="$name"
+                fi
+            fi
+        done
 
         # Get controller flags
         scan=$(scan_on)
@@ -296,9 +400,19 @@ show_menu() {
             toggle_pairable
             ;;
         *)
-            device=$(bluetoothctl devices | grep "$chosen")
-            # Open a submenu if a device is selected
-            if [[ $device ]]; then device_menu "$device"; fi
+            # Find the device MAC matching the chosen name
+            local chosen_mac=""
+            for mac in $(_list_device_macs); do
+                local name
+                name=$(_device_prop "$mac" Alias)
+                if [[ "$name" == "$chosen" ]]; then
+                    chosen_mac="$mac"
+                    break
+                fi
+            done
+            if [[ -n "$chosen_mac" ]]; then
+                device_menu "Device $chosen_mac $chosen"
+            fi
             ;;
     esac
 }

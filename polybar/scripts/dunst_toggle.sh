@@ -2,9 +2,9 @@
 
 get_status() {
     if dunstctl is-paused | grep -q "true"; then
-        echo " 󰂛 "
+        echo "󰂛 "
     else
-        echo " 󰂚 "
+        echo "󰂚 "
     fi
 }
 
