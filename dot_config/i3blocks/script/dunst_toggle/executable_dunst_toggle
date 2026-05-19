@@ -1,0 +1,23 @@
+#!/bin/bash
+
+STATUS_FILE="/tmp/dunst_status"
+
+# Get current Dunst state
+if dunstctl is-paused | grep -q "true"; then
+    echo "Dunst: Off"
+else
+    echo "Dunst: On"
+fi
+
+# If the script was run with a click event, toggle the state
+if [[ "$1" == "toggle" ]]; then
+    if dunstctl is-paused | grep -q "true"; then
+        dunstctl set-paused false
+        notify-send "Dunst Enabled" "Notifications are now visible"
+        echo "Dunst: On" > "$STATUS_FILE"
+    else
+        dunstctl set-paused true
+        notify-send "Dunst Disabled" "Notifications are now hidden"
+        echo "Dunst: Off" > "$STATUS_FILE"
+    fi
+fi

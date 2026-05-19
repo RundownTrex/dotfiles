@@ -1,0 +1,30 @@
+[Default Applications]
+x-scheme-handler/postman=Postman.desktop
+text/plain=org.xfce.mousepad.desktop
+x-scheme-handler/webcal=microsoft-edge-beta.desktop
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop
+application/pdf=org.gnome.Evince.desktop
+x-scheme-handler/spotify=spotify-open.desktop
+text/html=microsoft-edge-beta.desktop
+x-scheme-handler/http=microsoft-edge-beta.desktop
+x-scheme-handler/https=microsoft-edge-beta.desktop
+x-scheme-handler/about=microsoft-edge-beta.desktop
+x-scheme-handler/unknown=microsoft-edge-beta.desktop
+x-scheme-handler/mailto=microsoft-edge-beta.desktop
+x-scheme-handler/hayase=hayase.desktop
+x-scheme-handler/discord=vesktop.desktop
+x-scheme-handler/discord-1216669957799018608=discord-1216669957799018608.desktop
+x-scheme-handler/sgnl=signal.desktop
+x-scheme-handler/signalcaptcha=signal.desktop
+application/lrf=calibre-lrfviewer.desktop
+application/json=org.xfce.mousepad.desktop
+image/png=org.gnome.Shotwell-Viewer.desktop
+image/jpeg=org.gnome.Shotwell-Viewer.desktop
+
+[Added Associations]
+text/plain=org.xfce.mousepad.desktop;
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
+application/pdf=org.gnome.Evince.desktop;
+application/json=org.xfce.mousepad.desktop;
+image/png=org.gnome.Shotwell-Viewer.desktop;
+image/jpeg=org.gnome.Shotwell-Viewer.desktop;

@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+#
+# Battery status script for i3blocks (only percentage & charging status)
+#
+# Copyright 2014 Pierre Mavro <deimos@deimos.fr>
+# Modified 2025 by [Your Name]
+#
+# Licensed under the terms of the GNU GPL v3, or any later version.
+
+use strict;
+use warnings;
+use utf8;
+
+my $acpi;
+my $status;
+my $percent;
+my $bat_number = $ENV{BAT_NUMBER} || 0;
+my $label = $ENV{LABEL} || "";
+my $notify_threshold = 20;  # Critical battery notification level
+
+# Read battery status from acpi
+open (ACPI, "acpi -b 2>/dev/null | grep 'Battery $bat_number' |") or die;
+$acpi = <ACPI>;
+close(ACPI);
+
+# Exit if no battery detected
+if (not defined($acpi)) {
+    exit(0);
+}
+elsif ($acpi !~ /: ([\w\s]+), (\d+)%/) {
+    die "$acpi\n";
+}
+
+$status = $1;
+$percent = $2;
+my $full_text = "$label$percent%";
+
+# Append charging/discharging status
+if ($status eq 'Discharging') {
+    $full_text .= ' 🔋';  # Battery icon
+} elsif ($status eq 'Charging') {
+    $full_text .= ' ⚡';  # Charging icon
+}
+
+# Print the output (only percentage & status)
+print "$full_text\n";
+
+# Color indicators
+if ($status eq 'Discharging') {
+    if ($percent < 20) {
+        print "#FF0000\n";  # Red
+    } elsif ($percent < 40) {
+        print "#FFAE00\n";  # Orange
+    } elsif ($percent < 60) {
+        print "#FFF600\n";  # Yellow
+    } elsif ($percent < 85) {
+        print "#A8FF00\n";  # Greenish
+    }
+
+    # Low battery notification
+    if ($percent < $notify_threshold) {
+        system("notify-send -u critical 'Battery Low' 'Battery is at $percent%! Plug in your charger!'");
+    }
+
+    # Urgent exit code for critical battery
+    if ($percent < 5) {
+        exit(33);
+    }
+}
+
+exit(0);
