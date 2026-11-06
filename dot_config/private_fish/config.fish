@@ -26,3 +26,7 @@ set -gx PATH $PATH $HOME/.maestro/bin
 set -gx PATH $HOME/.nvm/versions/node/v22.16.0/bin $PATH
 
 set -Ux PATH /home/rundowntrex/.local/bin $PATH
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/rundowntrex/.local/bin" $PATH

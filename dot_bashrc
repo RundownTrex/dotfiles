@@ -40,3 +40,7 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="/home/rundowntrex/.local/bin:$PATH"
 
 export PATH=$PATH:/home/rundowntrex/.spicetify
+
+
+# opencode
+export PATH=/home/rundowntrex/.opencode/bin:$PATH
